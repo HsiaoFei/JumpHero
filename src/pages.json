@@ -1,0 +1,62 @@
+{
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [{
+		"path": "pages/home/home",
+		"style": {
+			"navigationBarTitleText": "300英雄战绩查询",
+			"enablePullDownRefresh": true
+		}
+	}, {
+		"path": "pages/details/details",
+		"style": {
+			"navigationBarTitleText": "对局详情"
+		}
+	}, {
+		"path": "pages/settings/settings",
+		"style": {
+			"navigationBarTitleText": "更多"
+		}
+	}, {
+		"path": "pages/match/match",
+		"style": {
+			"navigationBarTitleText": "比赛列表"
+		}
+	}, {
+		"path": "pages/update/update",
+		"style": {
+			"navigationBarTitleText": "更新日志"
+		}
+	}, {
+		"path": "pages/about/about",
+		"style": {
+			"navigationBarTitleText": "关于"
+		}
+	}],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "300英雄战绩查询",
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#ffffff"
+	},
+	"tabBar": {
+		"color": "#7F8C8D",
+		"selectedColor": "#2980B9",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/home/home",
+				"text": "首页",
+				"iconPath": "static/home.png",
+				"selectedIconPath": "static/home-h.png"
+			},
+			{
+				"pagePath": "pages/settings/settings",
+				"text": "更多",
+				"iconPath": "static/settings.png",
+				"selectedIconPath": "static/settings-h.png"
+			}
+		]
+	}
+}
