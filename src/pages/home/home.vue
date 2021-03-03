@@ -250,7 +250,9 @@ export default {
       this.request({
         url: api.NoticeUrl,
       }).then((res) => {
-        this.notice.push(res.data);
+        if(res.data){
+          this.notice.push(res.data);
+        }
       });
     },
     //添加名字
