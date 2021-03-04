@@ -1,19 +1,9 @@
-# jumphero
+# JumpHero
 
-## Project setup
-```
-npm install
-```
+### 利用 [uni-app](https://uniapp.dcloud.io/) [uView](https://uviewui.com/)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+300英雄战绩微信小程序
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+扫码体验：
+![image](https://github.com/HsiaoFei/JumpHero/blob/main/src/static/wx.jpg?raw=true)
