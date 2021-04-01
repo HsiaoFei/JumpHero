@@ -6,6 +6,11 @@
 300英雄战绩微信小程序
 
 
+npm install
+
+npm run dev:mp-weixin
+
+
 
 
 
