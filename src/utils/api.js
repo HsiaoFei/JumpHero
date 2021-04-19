@@ -1,6 +1,6 @@
 const ApiRootUrl = 'https://m300wxapp.jumpw.com/';
 const RootUrl = 'https://300report.jumpw.com/';
-const ApiUrl = 'https://hsiaofei.com/';
+const ApiUrl = '';
 
 module.exports = {
   GuidUrl: ApiRootUrl + 'config/getGuid', //区服
@@ -9,8 +9,8 @@ module.exports = {
   MatchUrl: RootUrl + 'api/getmatch', //对局详情
   ImageUrl: RootUrl + 'static/images/', //图片
 
-  NoticeUrl: ApiUrl + 'file/wechat/Hero300/notice', //公告
-  UpdateUrl: ApiUrl + 'file/wechat/Hero300/update', //更新日志
+  NoticeUrl: ApiUrl + '', //公告
+  UpdateUrl: ApiUrl + '', //更新日志
 
   // MatchsUrl: ApiRootUrl + 'battle/searchMatchs', //比赛列表
   // MatchinfoUrl: ApiRootUrl + 'battle/searchMatchinfo', //对局详情
