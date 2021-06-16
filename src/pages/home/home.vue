@@ -43,7 +43,7 @@
       />
       <u-gap bg-color="transparent"></u-gap>
     </u-popup>
-
+    <!-- 基本信息 -->
     <u-card
       v-if="normal"
       title="基本信息"
@@ -52,7 +52,7 @@
       sub-title-color="#2ecc71"
       :head-style="bgStyle"
       :body-style="bgStyle"
-      @head-click="toMatch"
+      @head-click="toPage('/pages/match/match', normal.RoleName, normal.RoleID)"
     >
       <view slot="body" class="content">
         <u-grid :col="3" :border="false" :hover-class="none">
@@ -83,6 +83,7 @@
         </u-grid>
       </view>
     </u-card>
+    <!-- 对局信息 -->
     <u-card
       v-if="normal"
       :title="
@@ -190,6 +191,7 @@
         </u-grid>
       </view>
     </u-card>
+    <!-- 无内容 -->
     <u-empty
       margin-top="300"
       v-if="!names.length"
@@ -250,7 +252,7 @@ export default {
       this.request({
         url: api.NoticeUrl,
       }).then((res) => {
-        if(res.data){
+        if (res.data) {
           this.notice.push(res.data);
         }
       });
@@ -295,10 +297,10 @@ export default {
     },
 
     //跳转 战绩列表
-    toMatch() {
-      uni.navigateTo({
-        url: "/pages/match/match?RoleName=" + this.names[this.current].name,
-      });
+    toPage(path, name, id) {
+        uni.navigateTo({
+          url: path + "?name=" + name + "&id=" + id,
+        });
     },
     //类型切换
     switchType() {

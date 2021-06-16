@@ -4,55 +4,86 @@
       :show-head="false"
       :show-foot="false"
       :body-style="bgStyle"
-      v-for="(itemList, indexList) in lists"
-      :key="indexList"
-      @body-click="toDetails(indexList)"
+      v-for="(item, index) in lists"
+      :key="index"
+      @body-click="toPage('/pages/details/details', item.MatchID)"
     >
       <view class="u-flex" slot="body">
-        <view class="u-flex-3 u-relative">
+        <!-- 头像、等级 -->
+        <view class="u-relative">
           <u-image
             width="96rpx"
             height="96rpx"
-            :src="imageUrl + itemList.Hero.IconFile"
+            :src="imageUrl + item.Hero.IconFile"
             shape="circle"
-            :lazy-load="true"
           ></u-image>
-          <view class="level u-absolute">{{ itemList.HeroLevel }}</view>
+          <view class="level u-absolute">{{ item.HeroLevel }}</view>
         </view>
-        <view class="u-flex-6">
+
+        <view class="u-flex-1" style="padding-left: 20rpx">
           <view
-            class="result"
-            :class="[
-              itemList.Result == 1
-                ? 'win'
-                : itemList.Result == 2
-                ? 'lose'
-                : itemList.Result == 3
-                ? 'run'
-                : '',
-            ]"
-            >{{
-              itemList.Result == 1
-                ? "胜利"
-                : itemList.Result == 2
-                ? "失败"
-                : itemList.Result == 3
-                ? "逃跑"
+            ><text
+              class="result"
+              :class="[
+                item.Result == 1
+                  ? 'win'
+                  : item.Result == 2
+                  ? 'lose'
+                  : item.Result == 3
+                  ? 'run'
+                  : '',
+              ]"
+              >{{
+                item.Result == 1
+                  ? "胜利"
+                  : item.Result == 2
+                  ? "失败"
+                  : item.Result == 3
+                  ? "逃跑"
+                  : "未定义"
+              }}</text
+            >
+            <text class="type">{{
+              item.MatchType == 1
+                ? "竞技场"
+                : item.MatchType == 15
+                ? "闪电战"
+                : item.MatchType == 2
+                ? "战场"
                 : "未定义"
-            }}</view
+            }}</text></view
           >
-          <view class="type">{{
-            itemList.MatchType == 1
-              ? "竞技场"
-              : itemList.MatchType == 15
-              ? "闪电战"
-              : itemList.MatchType == 2
-              ? "战场"
-              : "未定义"
-          }}</view>
+          <view class="info" v-if="item.Match"
+            >{{ item.Match.KillCount }} / {{ item.Match.DeathCount }} /
+            {{ item.Match.AssistCount }}</view
+          >
+          <view class="u-flex" v-if="item.Match">
+            <!-- 技能 -->
+            <view class="skill u-flex">
+              <u-image
+                v-for="(itemSkill, indexSkill) in item.Match.Skill"
+                :key="indexSkill"
+                width="40rpx"
+                height="48rpx"
+                :src="imageUrl + itemSkill.IconFile"
+                :lazy-load="true"
+              ></u-image>
+            </view>
+            <!-- 装备 -->
+            <view class="equip u-flex">
+              <u-image
+                v-for="(itemEquip, indexEquip) in item.Match.Equip"
+                :key="indexEquip"
+                width="48rpx"
+                height="48rpx"
+                :src="imageUrl + itemEquip.IconFile"
+                :lazy-load="true"
+              ></u-image>
+            </view>
+          </view>
         </view>
-        <view class="u-flex-3">
-          <view class="info">{{ itemList.MatchDate.substring(5, 16) }}</view>
+        <view>
+          <view class="info">{{ item.MatchDate.substring(5, 16) }}</view>
         </view>
       </view>
     </u-card>
@@ -63,15 +94,17 @@
 
 <script>
 import api from "../../utils/api";
-var _self;
 export default {
   data() {
     return {
       scrollTop: 0,
-      lists: [],
-      matchs: [],
+      lists: [], //比赛列表
+      // alists: [], //每次请求得到的比赛列表
+      matchs: [], //比赛信息
+      // amatchs: [], //每次请求得到的比赛信息
       index: 0,
       name: "",
+      id: "",
       status: "loading",
       imageUrl: api.ImageUrl,
       bgStyle: {
@@ -85,25 +118,51 @@ export default {
         url: api.ListUrl,
         data: { name: name, index: index },
       }).then((res) => {
-        var listsBefore = this.lists;
-        this.lists = listsBefore.concat(res.data.List);
+        this.getMatch(res.data.List);
         if (res.data.List.length < 10) {
           this.status = "nomore";
         }
       });
     },
-    toDetails(index) {
+    getMatch(alists) {
+      for (let i in alists) {
+        setTimeout(() => {
+          this.request({
+            url: api.MatchUrl,
+            data: { id: alists[i].MatchID },
+          }).then((res) => {
+            let matchs = res.data.Match.WinSide.concat(res.data.Match.LoseSide);
+            let id = this.id;
+            let func = function (matchs) {
+              for (let j in matchs) {
+                if (matchs[j].RoleID == id) {
+                  return matchs[j];
+                }
+              }
+            };
+            alists[i].Match = func(matchs);
+          });
+        }, 200);
+      }
+      console.log(alists);
+      this.lists = this.lists.concat(alists);
+    },
+    toPage(path, id) {
       uni.navigateTo({
-        url: "/pages/details/details?MatchID=" + this.lists[index].MatchID,
+        url: path + "?id=" + id,
       });
     },
   },
   onLoad(option) {
-    this.getList(option.RoleName);
-    this.name = option.RoleName;
+    this.getList(option.name);
+    this.name = option.name;
+    this.id = option.id;
     uni.setNavigationBarTitle({
-      title: option.RoleName,
+      title: option.name,
     });
+  },
+  onShow() {
+    clearTimeout();
   },
   onPageScroll(e) {
     this.scrollTop = e.scrollTop;
@@ -142,10 +201,18 @@ export default {
   color: $u-type-warning;
 }
 .type {
+  display: inline-block;
+  padding: 0 10rpx;
   color: $u-main-color;
 }
 .info {
   font-size: 22rpx;
   color: $u-light-color;
+}
+.skill {
+  padding: 10rpx 0;
+}
+.equip {
+  padding: 10rpx;
 }
 </style>
