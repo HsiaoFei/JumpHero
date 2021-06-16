@@ -18,15 +18,7 @@
     <view v-if="current === 0">
       <u-card
         v-if="match"
-        :title="
-          match.MatchType == 1
-            ? '竞技场'
-            : match.MatchType == 15
-            ? '闪电战'
-            : match.MatchType == 2
-            ? '战场'
-            : '未知' + '(' + (match.UsedTime / 60).toFixed(0) + 'min)'
-        "
+        :title=" match.MatchType == 1 ? '竞技场' : match.MatchType == 15 ? '闪电战' : match.MatchType == 2 ? '战场' : '未知' + '(' + (match.UsedTime / 60).toFixed(0) + 'min)' "
         :sub-title="match.MatchDate.substring(5, 16)"
         title-color="#2c3e50"
         :head-style="bgStyle"
@@ -107,7 +99,7 @@ export default {
     },
   },
   onLoad(option) {
-    this.getMatch(option.id);
+    this.getMatch(option.MatchID);
   },
   onPageScroll(e) {
     this.scrollTop = e.scrollTop;
