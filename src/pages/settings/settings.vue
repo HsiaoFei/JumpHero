@@ -1,54 +1,105 @@
 <template>
-  <u-cell-group>
-    <u-cell-item
-      icon="calendar"
-      title="更新日志"
-      @click="clickCell"
-      index="0"
-    ></u-cell-item>
-    <u-cell-item
-      icon="clock"
-      title="清除缓存"
-      @click="clickCell"
-      index="1"
-    ></u-cell-item>
-    <u-cell-item
-      icon="question-circle"
-      title="关于"
-      @click="clickCell"
-      index="2"
-    ></u-cell-item>
-  </u-cell-group>
+  <view>
+    <u-cell-group title="常规">
+      <u-cell-item
+        title="显示出装"
+        label="战绩列表显示该局出装"
+        :arrow="false"
+        hover-class="none"
+        ><u-switch
+          v-model="settings.isShowEquip"
+          :vibrate-short="true"
+          size="40"
+          @change="change"
+        ></u-switch
+      ></u-cell-item>
+      <u-cell-item
+        title="在线验证"
+        label="打开可验证召唤师是否有效"
+        :arrow="false"
+        hover-class="none"
+        ><u-switch
+          v-model="settings.isManagerOnline"
+          :vibrate-short="true"
+          size="40"
+          @change="change"
+        ></u-switch
+      ></u-cell-item>
+      <u-cell-item title="召唤师管理提示" :arrow="false" hover-class="none"
+        ><u-switch
+          v-model="settings.isShowManagerTips"
+          :vibrate-short="true"
+          size="40"
+          @change="change"
+        ></u-switch
+      ></u-cell-item>
+       <u-cell-item title="对战列表提示" :arrow="false" hover-class="none"
+        ><u-switch
+          v-model="settings.isShowMatchListTips"
+          :vibrate-short="true"
+          size="40"
+          @change="change"
+        ></u-switch
+      ></u-cell-item>
+    </u-cell-group>
+    <u-cell-group title="测试功能">
+      <u-cell-item
+        title="标记好友"
+        :required="true"
+        label="测试功能 所有数据均保存在本地"
+        :arrow="false"
+        hover-class="none"
+        ><u-switch
+          v-model="settings.isFindFriends"
+          :vibrate-short="true"
+          size="40"
+          @change="change"
+        ></u-switch
+      ></u-cell-item>
+      <u-cell-item
+        v-if="settings.isFindFriends"
+        title="标记好友提示"
+        :required="true"
+        :arrow="false"
+        hover-class="none"
+        ><u-switch
+          v-model="settings.isShowFindFriendsTips"
+          :vibrate-short="true"
+          size="40"
+          @change="change"
+        ></u-switch
+      ></u-cell-item>
+    </u-cell-group>
+  </view>
 </template>
 <script>
 export default {
-  // props:['index'],
   data() {
-    return {};
+    return {
+      settings: uni.getStorageSync("SETTINGS"),
+      model: { show: false, content: "" }, //模态框
+    };
   },
   methods: {
-    clickCell(index) {
-      if (index == 0) {
-        uni.navigateTo({
-          url: "/pages/update/update",
-        });
-      } else if (index == 1) {
-        uni.showModal({
-          title: "警告",
-          content: "是否清除全部缓存？此操作无法恢复",
-          success(res) {
-            if (res.confirm) {
-              uni.clearStorageSync();
-            }
-          },
-        });
-        this.$forceUpdate();
-      } else if (index == 2) {
-        uni.navigateTo({
-          url: "/pages/about/about",
-        });
-      }
+    toPage(path) {
+      uni.navigateTo({
+        url: path,
+      });
     },
+    change() {
+      uni.setStorageSync("SETTINGS", this.settings);
+    },
+  },
+  onLoad() {
+    if (!this.settings) {
+      let settings = {
+        isShowEquip: true,
+        isManagerOnline: false,
+        isShowManagerTips: true,
+        isFindFriends: false,
+      };
+      uni.setStorageSync("SETTINGS", settings);
+    }
   },
 };
 </script>

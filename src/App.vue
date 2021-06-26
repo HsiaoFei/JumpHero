@@ -1,13 +1,22 @@
 <script>
 export default {
-  data(){
-    return{
-      groupIdList:['1157749615'],
+  globalData: {},
+  onLaunch() {
+    if (!uni.getStorageSync("SETTINGS")) {
+      //初始化设置
+      let settings = {
+        isShowEquip: true, //显示装备
+        isShowManagerTips: true, //显示召唤师管理提示
+        isShowMatchListTips: true, //对局列表显示提示
+        isManagerOnline: false, //在线验证
+        isFindFriends: false, //标记好友
+        isShowFindFriendsTips: true, //标记好友提示
+      };
+      uni.setStorageSync("SETTINGS", settings);
     }
   },
-  onLaunch: function () {},
-  onShow: function () {},
-  onHide: function () {},
+  onShow() {},
+  onHide() {},
 };
 </script>
 

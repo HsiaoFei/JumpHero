@@ -1,51 +1,63 @@
 <template>
   <view>
     <!-- 无网络 -->
-    <u-no-network @retry="retry"></u-no-network>
+    <!-- <u-no-network @retry="reTry"></u-no-network> -->
     <u-card
-      :title="itemUpdate.Date"
-      :head-style="bgStyle"
-      :body-style="bgStyle"
+      :title="item.date"
+      :head-style="{ background: '#f5f6fa', color: '#34495e' }"
+      :body-style="{ background: '#f5f6fa', color: '#34495e' }"
       title-color="#e67e22"
-      v-for="(itemUpdate, indexUpdate) in update"
-      :key="indexUpdate"
+      v-for="(item, index) in profile.update"
+      :key="index"
     >
       <view class="text" slot="body"
-        ><text>{{ itemUpdate.Text }}</text></view
+        ><text>{{ item.content }}</text></view
       >
     </u-card>
+    <u-modal
+      title="提示"
+      :title-style="{ 'font-weight': 700 }"
+      v-model="modal"
+      content="暂无内容"
+      @confirm="toBack(1)"
+    ></u-modal>
   </view>
 </template>
 
 <script>
-import api from "../../utils/api";
+import api from "@/utils/api";
 export default {
   data() {
     return {
-      update: [],
-      bgStyle: {
-        background: "#f5f6fa",
-        color: "#34495e",
-      },
+      profile: uni.getStorageSync("PROFILE"),
+      modal: false,
     };
   },
   methods: {
-    getUpdate() {
+    // 获取公告类信息
+    getJumpheroProfile() {
       this.request({
-        url: api.UpdateUrl,
-      }).then((res) => {
-        this.update = res.data.Content;
-      });
+        url: api.JumpheroProfile,
+      })
+        .then((res) => {
+          this.profile = res.data;
+          uni.setStorageSync("PROFILE", res.data);
+        })
+        .catch((res) => {
+          console.log(res);
+        });
     },
-    retry() {
-      this.getUpdate();
+    // reTry() {
+    //   this.getJumpheroProfile();
+    // },
+    toBack(value) {
+      uni.navigateBack(value);
     },
   },
-  created() {
-    this.getUpdate();
-  },
-  onLoad() {
-    // this.getUpdate();
+  onShow() {
+    if (!this.profile) {
+      this.getJumpheroProfile();
+    }
   },
 };
 </script>

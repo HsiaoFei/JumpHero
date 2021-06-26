@@ -1,105 +1,142 @@
 <template>
   <view>
-    <!-- 菜单 分段器 -->
-    <u-sticky>
-      <u-subsection
-        :list="menu"
-        :current="current"
-        :animation="true"
-        active-color="#27ae60"
-        inactive-color="#2c3e50"
-        bg-color="#ecf0f1"
-        button-color="#ffffff"
-        @change="sectionChange"
-      ></u-subsection>
-    </u-sticky>
-
     <!-- 默认 文字样式 -->
-    <view v-if="current === 0">
-      <u-card
-        v-if="match"
-        :title=" match.MatchType == 1 ? '竞技场' : match.MatchType == 15 ? '闪电战' : match.MatchType == 2 ? '战场' : '未知' + '(' + (match.UsedTime / 60).toFixed(0) + 'min)' "
-        :sub-title="match.MatchDate.substring(5, 16)"
-        title-color="#2c3e50"
-        :head-style="bgStyle"
-        :body-style="bgStyle"
-      >
-        <view slot="body">
-          <view class="u-flex u-text-center">
-            <u-count-to
-              :duration="700"
-              :start-val="0"
-              :end-val="match.WinSideKill"
-              color="#27ae60"
-              bold="true"
-              class="u-flex-5"
-            ></u-count-to>
-            <view class="u-flex-2">:</view>
-            <u-count-to
-              :duration="700"
-              :start-val="0"
-              :end-val="match.LoseSideKill"
-              color="#c0392b"
-              bold="true"
-              class="u-flex-5"
-            ></u-count-to
-          ></view>
-        </view>
-      </u-card>
-      <info-list :match="match.WinSide" :result="'win'"></info-list>
-      <info-list :match="match.LoseSide" :result="'lose'"></info-list>
-      <!-- 比赛信息 -->
+    <u-card
+      v-if="match"
+      :title="
+        match.MatchType == 1
+          ? '竞技场' + '(' + format(match.UsedTime) + ')'
+          : match.MatchType == 15
+          ? '闪电战' + '(' + (match.UsedTime / 60).toFixed(0) + 'min)'
+          : match.MatchType == 2
+          ? '战场' + '(' + (match.UsedTime / 60).toFixed(0) + 'min)'
+          : '未知' + '(' + (match.UsedTime / 60).toFixed(0) + 'min)'
+      "
+      :sub-title="format(match.MatchDate)"
+      title-color="#2c3e50"
+      :head-style="{ background: '#f5f6fa' }"
+      :body-style="{ background: '#f5f6fa' }"
+    >
+      <view slot="body">
+        <view class="u-flex u-text-center">
+          <u-count-to
+            :duration="700"
+            :start-val="0"
+            :end-val="match.WinSideKill"
+            color="#27ae60"
+            class="u-flex-5"
+          ></u-count-to>
+          <view class="u-flex-2 u-font-50">VS</view>
+          <u-count-to
+            :duration="700"
+            :start-val="0"
+            :end-val="match.LoseSideKill"
+            color="#c0392b"
+            class="u-flex-5"
+          ></u-count-to
+        ></view>
+      </view>
+    </u-card>
+    <view class="u-margin-32">
+      <u-alert-tips
+        v-if="isFindFriends"
+        type="warning"
+        :show="isShowFindFriendsTips"
+        description="现在你可以在本界面点击召唤师昵称标记好友啦！此功能为测试功能，可能存在Bug，敬请谅解。"
+        :show-icon="true"
+        :close-able="true"
+        @close="closeAlertTips"
+      ></u-alert-tips>
     </view>
-    <!-- 图表样式 -->
-    <view v-if="current === 1">
-      <info-charts :match="match.WinSide" :result="'win'"></info-charts>
-      <info-charts :match="match.LoseSide" :result="'lose'"></info-charts>
-      <!-- <info-charts :match="match.LoseSide"></info-charts> -->
+    <view>
+      <info-list
+        :match="match.WinSide"
+        :result="'win'"
+        :myid="myid"
+      ></info-list>
+      <info-list
+        :match="match.LoseSide"
+        :result="'lose'"
+        :myid="myid"
+      ></info-list>
     </view>
+    <!-- 空内容 -->
+    <u-empty
+      margin-top="300"
+      v-if="!match.WinSide && !match.LoseSide"
+    ></u-empty>
     <!-- 返回顶部 -->
     <u-back-top :scroll-top="scrollTop"></u-back-top>
   </view>
 </template>
 
 <script>
-import api from "../../utils/api";
-import infoCharts from "../../components/infoCharts/infoCharts";
-import infoList from "../../components/infoList/infoList";
+import api from "@/utils/api";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/zh";
+// import infoCharts from "@/components/infoCharts/infoCharts";
+import infoList from "@/components/infoList/infoList";
 
 export default {
   components: {
-    infoCharts,
     infoList,
   },
   data() {
     return {
-      menu: [{ name: "默认" }, { name: "图表" }],
       current: 0,
       scrollTop: 0,
       match: "",
-      bgStyle: {
-        background: "#f5f6fa",
-      },
+      matchID: "",
+      myid: "",
+      isShowFindFriendsTips: false,
+      isFindFriends: false,
     };
   },
   computed: {},
   methods: {
-    sectionChange(index) {
-      this.current = index;
+    //格式化时间
+    format(date) {
+      if (typeof date == "string") {
+        dayjs.extend(relativeTime);
+        return dayjs(date).locale("zh").fromNow();
+      } else {
+        return dayjs(date * 1000).format("mm分ss秒");
+      }
     },
-
     //获取数据
     getMatch(id) {
       this.request({
         url: api.MatchUrl,
         data: { id: id },
+        method: "POST",
       }).then((res) => {
         this.match = res.data.Match;
+        console.log(res.data.Match);
       });
     },
+    closeAlertTips() {
+      let settings = uni.getStorageSync("SETTINGS");
+      this.isShowFindFriendsTips = false;
+      settings.isShowFindFriendsTips = false;
+      uni.setStorageSync("SETTINGS", settings);
+      this.$refs.toast.show({
+        title: "关闭成功！可在 设置 中再次开启",
+        type: "success",
+      });
+    },
+    reTry() {
+      this.getMatch(this.matchID);
+    },
   },
+
   onLoad(option) {
-    this.getMatch(option.MatchID);
+    this.myid = uni.getStorageSync("MYROLEID");
+    let settings = uni.getStorageSync("SETTINGS");
+    this.matchID = option.MatchID;
+    this.isShowFindFriendsTips = settings.isShowFindFriendsTips;
+    this.isFindFriends = settings.isFindFriends;
+    this.getMatch(this.matchID);
   },
   onPageScroll(e) {
     this.scrollTop = e.scrollTop;

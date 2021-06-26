@@ -1,111 +1,115 @@
 <template>
   <view>
-    <u-sticky>
-      <u-tabs
-        v-if="names.length"
-        name="name"
-        :list="names"
-        :current="current"
-        @change="subsectionChange"
-        active-color="#27ae60"
-        bg-color="#ecf0f1"
-        :bold="false"
-        inactive-color="#34495e"
-      ></u-tabs>
-    </u-sticky>
     <!-- 通告栏 -->
-    <u-notice-bar :list="notice"> </u-notice-bar>
-    <!-- 无网络 -->
-    <u-no-network @retry="retry"></u-no-network>
-    <!-- 下拉框 -->
-    <u-popup v-model="showPopup" mode="top" :z-index="100">
-      <u-gap bg-color="transparent"></u-gap>
-      <u-search
-        class="search"
-        v-model="inputValue"
-        shape="round"
-        bg-color="#f5f6fa"
-        :show-action="false"
-        placeholder="请输入召唤师昵称"
-        @search="addName"
-        @clear="clearInputValue"
-      ></u-search>
-      <u-gap bg-color="transparent"></u-gap>
-      <u-tag
-        class="u-margin-10"
-        v-for="(itemNames, indexNames) in names"
-        :key="indexNames"
-        :text="itemNames.name"
-        closeable
-        shape="circle"
-        @close="deleteName(indexNames)"
-        type="success"
-      />
-      <u-gap bg-color="transparent"></u-gap>
-    </u-popup>
-
+    <u-notice-bar :list="notice"></u-notice-bar>
+    <!-- 基本信息 -->
     <u-card
-      v-if="normal"
-      title="基本信息"
+      :title="names[current].name"
       sub-title="查询战绩"
       title-color="#2c3e50"
       sub-title-color="#2ecc71"
-      :head-style="bgStyle"
-      :body-style="bgStyle"
-      @head-click="toMatch"
+      :head-style="{ background: '#f5f6fa' }"
+      :body-style="{ background: '#f5f6fa' }"
+      :foot-style="{ background: '#f5f6fa' }"
+      @head-click="
+        toPage('/pages/match/match', '?RoleName=' + names[current].name)
+      "
+      @foot-click="switchName"
     >
       <view slot="body" class="content">
-        <u-grid :col="3" :border="false" :hover-class="none">
-          <u-grid-item bg-color="transparent">
-            <view>{{ guid.data[normal.Guid].guidname }}</view>
+        <u-grid
+          :col="normal.Guid ? 3 : 4"
+          :border="false"
+          :hover-class="none"
+          v-if="normal"
+        >
+          <u-grid-item bg-color="transparent" v-if="normal.Guid">
+            <view>{{
+              guid.data[normal.Guid].guidname
+                ? guid.data[normal.Guid].guidname
+                : "-"
+            }}</view>
             <view class="info">区服</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent">
-            <view>{{ normal.MasterLv }}</view>
+          <u-grid-item bg-color="transparent" v-if="normal.MasterLv">
+            <view>{{ normal.MasterLv ? normal.MasterLv : "-" }}</view>
             <view class="info">账号等级</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent">
-            <view>VIP{{ normal.LvVIP }}</view>
+          <u-grid-item bg-color="transparent" v-if="normal.LvVIP">
+            <view>{{ normal.LvVIP ? normal.LvVIP : "-" }}</view>
             <view class="info">VIP等级</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent">
-            <view>{{ normal.TeamScore }}</view>
+          <u-grid-item bg-color="transparent" v-if="normal.TeamScore">
+            <view>{{ normal.TeamScore ? normal.TeamScore : "-" }}</view>
             <view class="info">团分</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent">
-            <view>{{ normal.HeroCount }}</view>
+          <u-grid-item bg-color="transparent" v-if="normal.HeroCount">
+            <view>{{ normal.HeroCount ? normal.HeroCount : "-" }}</view>
             <view class="info">持有英雄</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent">
-            <view>{{ normal.SkinCount }}</view>
+          <u-grid-item bg-color="transparent" v-if="normal.SkinCount">
+            <view>{{ normal.SkinCount ? normal.SkinCount : "-" }}</view>
             <view class="info">持有皮肤</view>
           </u-grid-item>
+          <u-grid-item bg-color="transparent" v-if="normal.RoleLevel">
+            <view>{{ normal.RoleLevel ? normal.RoleLevel : "-" }}</view>
+            <view class="info">等级</view>
+          </u-grid-item>
+          <u-grid-item bg-color="transparent" v-if="normal.WinCount">
+            <view>{{ normal.WinCount ? normal.WinCount : "-" }}</view>
+            <view class="info">胜场</view>
+          </u-grid-item>
+          <u-grid-item bg-color="transparent" v-if="normal.MatchCount">
+            <view>{{ normal.MatchCount ? normal.MatchCount : "-" }}</view>
+            <view class="info">总场</view>
+          </u-grid-item>
+          <u-grid-item bg-color="transparent" v-if="normal.WinCount">
+            <view>{{
+              normal.MatchCount == 0
+                ? 0
+                : ((normal.WinCount / normal.MatchCount) * 100).toFixed(2) + "%"
+            }}</view>
+            <view class="info">胜率</view>
+          </u-grid-item>
         </u-grid>
+        <u-empty :show="!normal" mode="data"></u-empty>
       </view>
+      <view slot="foot" style="color: #e67e22; font-size: 26rpx"
+        >切换召唤师</view
+      >
     </u-card>
     <u-card
-      v-if="normal"
+      v-if="normal.MatchSportsList"
       :title="
-        matchType[normal.MatchSportsList[matchSportsListIndex].MID] + '(Max)'
+        matchType[normal.MatchSportsList[matchSportsListIndex].MID]
+          ? matchType[normal.MatchSportsList[matchSportsListIndex].MID] +
+            '(Max)'
+          : ''
       "
-      sub-title="切换类型"
+      :sub-title="normal ? '切换类型' : ''"
       sub-title-color="#e67e22"
       border="false"
-      :head-style="bgStyle"
-      :body-style="bgStyle"
+      :head-style="{ background: '#f5f6fa' }"
+      :body-style="{ background: '#f5f6fa' }"
       @head-click="switchType"
     >
       <view slot="body" class="content">
-        <u-grid :col="3" :border="false">
+        <u-grid :col="3" :border="false" :hover-class="none" v-if="normal">
           <u-grid-item bg-color="transparent">
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports.BestKill
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestKill
+                : "-"
             }}</view>
             <view class="info">击杀</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent">
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports.BestHelp
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestHelp
+                : "-"
             }}</view>
             <view class="info">助攻</view>
           </u-grid-item>
@@ -113,6 +117,9 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestKillMonster
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestKillMonster
+                : "-"
             }}</view>
             <view class="info">补兵</view>
           </u-grid-item>
@@ -120,6 +127,9 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestKillTower
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestKillTower
+                : "-"
             }}</view>
             <view class="info">推塔</view>
           </u-grid-item>
@@ -127,6 +137,9 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestContinueKill
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestContinueKill
+                : "-"
             }}</view>
             <view class="info">连杀</view>
           </u-grid-item>
@@ -134,6 +147,9 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestContinueWin
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestContinueWin
+                : "-"
             }}</view>
             <view class="info">连胜</view>
           </u-grid-item>
@@ -141,6 +157,9 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestDamage
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestDamage
+                : "-"
             }}</view>
             <view class="info">输出</view>
           </u-grid-item>
@@ -148,6 +167,9 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestBeHurt
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestBeHurt
+                : "-"
             }}</view>
             <view class="info">承伤</view>
           </u-grid-item>
@@ -155,12 +177,17 @@
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports
                 .BestAthMoney
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports
+                    .BestAthMoney
+                : "-"
             }}</view>
             <view class="info">经济</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent">
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports.Total
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports.Total
+                : "-"
             }}</view>
             <view class="info">总场</view>
           </u-grid-item>
@@ -168,11 +195,13 @@
           <u-grid-item bg-color="transparent">
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports.Win
+                ? normal.MatchSportsList[matchSportsListIndex].MatchSports.Win
+                : "-"
             }}</view>
             <view class="info">胜场</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent">
-            <view v-if="normal"
+            <view
               >{{
                 (normal.MatchSportsList[matchSportsListIndex].MatchSports
                   .Total == 0
@@ -188,43 +217,45 @@
             <view class="info">胜率</view>
           </u-grid-item>
         </u-grid>
+        <u-empty :show="!normal" mode="data"></u-empty>
       </view>
     </u-card>
-    <u-empty
-      margin-top="300"
-      v-if="!names.length"
-      text="没有发现数据，可下拉添加哦~"
-    ></u-empty>
-    <u-toast ref="uToast" />
+    <!-- 空内容 -->
+    <u-empty margin-top="300" v-if="isEmpty"></u-empty>
+    <!-- 无网络 -->
+    <u-no-network @retry="reTry"></u-no-network>
+    <!-- 提示框 -->
+    <u-toast ref="toast" />
+    <!-- 模态框 -->
+    <u-modal
+      v-model="model.show"
+      :content="model.content"
+      :show-cancel-button="true"
+      @confirm="toPage('/pages/manager/manager')"
+    ></u-modal>
   </view>
 </template>
 
 <script>
-import api from "../../utils/api";
+import api from "@/utils/api";
 
 export default {
   data() {
     return {
-      notice: [],
+      notice: [], //公告
       current: 0,
-      showPopup: false,
-      showModal: false,
-      contentModal: "",
-      guid: "",
+      guid: "", //区服列表
       names: [],
       normal: "",
-      inputValue: "",
       matchSportsListIndex: 0,
       imageUrl: api.ImageUrl,
-      bgStyle: {
-        background: "#f5f6fa",
+      isEmpty: false,
+      matchType: { 254: "竞技场", 252: "战场", 273: "排位赛", 356: "闪电战" },
+      model: {
+        show: false,
+        content: "",
       },
     };
-  },
-  computed: {
-    matchType() {
-      return { 254: "竞技场", 252: "战场", 273: "排位赛", 356: "闪电战" };
-    },
   },
   methods: {
     //获取服务器列表
@@ -242,126 +273,84 @@ export default {
         data: { RoleName: name },
         method: "POST",
       }).then((res) => {
-        this.normal = res.data.data;
-      });
-    },
-    // 获取公告
-    getNotice() {
-      this.request({
-        url: api.NoticeUrl,
-      }).then((res) => {
-        if(res.data){
-          this.notice.push(res.data);
+        if (res.data.data) {
+          this.normal = res.data.data;
+          uni.setStorageSync("MYROLEID", res.data.data.RoleID);
+        } else {
+          this.normal = "";
+          this.getRole(name);
         }
       });
     },
-    //添加名字
-    addName(value) {
-      if (uni.getStorageSync("NAMES")) {
-        for (var i in uni.getStorageSync("NAMES")) {
-          if (value == uni.getStorageSync("NAMES")[i].name) {
-            this.showToast(value + "已存在", "warning");
-            this.inputValue = "";
-            return;
-          }
-        }
-      }
+    getRole(name) {
       this.request({
-        url: api.NormalUrl,
-        data: { RoleName: value },
+        url: api.RoleUrl,
+        data: { name },
         method: "POST",
       }).then((res) => {
-        if (res.data.success == true) {
-          var list = uni.getStorageSync("NAMES") || [];
-          list.push({ name: value });
-          uni.setStorageSync("NAMES", list);
-          this.showToast(value + "添加成功", "success");
-          this.names = uni.getStorageSync("NAMES");
-          this.searchNormal(this.names[this.current].name);
+        console.log("RoleUrl", res);
+        if (res.data.Role) {
+          this.normal = res.data.Role;
+          uni.setStorageSync("MYROLEID", res.data.Role.RoleID);
         } else {
-          this.showToast(value + "不存在", "error");
+          this.normal = "";
+          this.$refs.toast.show({
+            title: "啊哦~查询不到数据",
+            type: "error",
+          });
         }
       });
-      this.inputValue = "";
     },
-
-    //显示Toast
-    showToast(title, type, url) {
-      this.$refs.uToast.show({
-        title: title,
-        type: type,
-        url: url,
-      });
+    // 获取公告类信息
+    getJumpheroProfile() {
+      this.request({
+        url: api.JumpheroProfile,
+      })
+        .then((res) => {
+          this.notice.push(res.data.notice);
+          uni.setStorageSync("PROFILE", res.data);
+        })
+        .catch((res) => {
+          console.log(res);
+        });
     },
-
-    //跳转 战绩列表
-    toMatch() {
-      uni.navigateTo({
-        url: "/pages/match/match?RoleName=" + this.names[this.current].name,
-      });
+    //跳转
+    toPage(path, value) {
+      if (value)
+        uni.navigateTo({
+          url: path + value,
+        });
+      else
+        uni.navigateTo({
+          url: path,
+        });
     },
     //类型切换
     switchType() {
-      if (this.matchSportsListIndex < this.normal.MatchSportsList.length - 1) {
-        this.matchSportsListIndex++;
-      } else {
-        this.matchSportsListIndex = 0;
+      if (this.normal) {
+        if (this.matchSportsListIndex < this.normal.MatchSportsList.length - 1)
+          this.matchSportsListIndex++;
+        else this.matchSportsListIndex = 0;
       }
     },
-    //Tabs 触发事件
-    subsectionChange(index) {
-      this.current = index;
-      this.matchSportsListIndex = 0;
-      this.searchNormal(this.names[this.current].name);
-    },
-    //删除名字
-    deleteName(index) {
-      var _self = this;
-      uni.showModal({
-        title: "提示",
-        content: "确定要删除'" + this.names[index].name + "'吗",
-        success(res) {
-          if (res.confirm) {
-            var arr = uni.getStorageSync("NAMES");
-            arr.splice(index, 1);
-            uni.setStorageSync("NAMES", arr);
-            _self.names = arr;
-            if (arr.length) {
-              _self.searchNormal(arr[0].name);
-            } else {
-              _self.normal = "";
-            }
-          }
-        },
-      });
-    },
-    //清除输入框内容
-    clearInputValue() {
-      this.inputValue = "";
+    //用户切换
+    switchName() {
+      if (this.names) {
+        if (this.current < this.names.length - 1) this.current++;
+        else this.current = 0;
+        this.searchNormal(this.names[this.current].name);
+      }
     },
     //重新获取
-    retry() {
+    reTry() {
       this.getGuid();
-      this.getNotice();
+      this.getJumpheroProfile();
       this.onShow();
     },
   },
   onLoad() {
     this.getGuid();
-    this.getNotice();
-    //获取新版本
-    const updateManager = uni.getUpdateManager();
-    updateManager.onUpdateReady(function (res) {
-      uni.showModal({
-        title: "更新提示",
-        content: "新版本已经准备好，是否重启应用？",
-        success(res) {
-          if (res.confirm) {
-            updateManager.applyUpdate();
-          }
-        },
-      });
-    });
+    this.getJumpheroProfile();
     // #ifdef MP-QQ
     qq.showShareMenu({
       showShareItems: ["qq", "qzone", "wechatFriends", "wechatMoment"],
@@ -369,16 +358,15 @@ export default {
     // #endif
   },
   onShow() {
-    this.names = uni.getStorageSync("NAMES");
-    if (uni.getStorageSync("NAMES").length) {
-      this.searchNormal(this.names[this.current].name);
+    let names = uni.getStorageSync("NAMES") || [];
+    this.names = names;
+    if (names.length) {
+      this.searchNormal(names[this.current].name);
     } else {
-      this.normal = "";
+      this.model.content = "未检测到本地有数据，是否前往召唤师管理界面？";
+      this.model.show = true;
+      this.isEmpty = true;
     }
-  },
-  onPullDownRefresh() {
-    uni.stopPullDownRefresh();
-    this.showPopup = true;
   },
 };
 </script>

@@ -1,63 +1,68 @@
 <template>
-  <view>
-    <u-card
-      title="使用说明"
-      title-color="#34495e"
-      :head-style="bgStyle"
-      :body-style="bgStyle"
-      :foot-style="bgStyle"
-    >
-      <view class="" slot="body">
+  <u-card
+    title="使用说明"
+    title-color="#34495e"
+    :head-style="{ background: '#f5f6fa' }"
+    :body-style="{ background: '#f5f6fa' }"
+    :foot-style="{ background: '#f5f6fa' }"
+  >
+    <view slot="body">
+      <view v-for="(item, index) in profile.about.content" :key="index">
         <view class="question">
-          <u-icon name="question-circle"></u-icon
-          >为什么一直显示加载中或出现界面没有数据的情况？</view
+          <u-icon name="question-circle" class="u-margin-right-15"></u-icon
+          >{{ item.question }}</view
         >
         <view class="answer"
-          ><u-icon name="checkmark-circle"></u-icon
-          >可能由于网络环境、服务器状况等因素导致。</view
-        >
-        <view class="question">
-          <u-icon name="question-circle"></u-icon
-          >为什么输入正确的昵称提示昵称不存在？并且无法保存？</view
-        >
-        <view class="answer"
-          ><u-icon name="checkmark-circle"></u-icon
-          >300英雄不提供较早的数据。在存储之前会访问服务器检查是否存在该用户的数据，不存在则无法存储。</view
-        >
-        <u-gap bg-color="transparent"></u-gap>
-        <view class="question"
-          ><u-icon name="error-circle"></u-icon
-          >数据仅供参考，请以游戏内实际数据为准。</view
+          ><u-icon name="checkmark-circle" class="u-margin-right-15"></u-icon
+          >{{ item.answer }}</view
         >
       </view>
-      <view slot="foot">
-        <!-- #ifdef MP-QQ  -->
-        <u-button
-          open-type="openGroupProfile"
-          group-id="1157749615"
-          hair-line
-          ripple
-          >点击添加QQ群</u-button
-        >
-        <!-- #endif  -->
-        <!-- #ifdef MP-WEIXIN  -->
-        <u-button open-type="contact" :hair-line="false" :ripple="true"
-          >点击联系作者</u-button
-        >
-        <!-- #endif  -->
-      </view>
-    </u-card>
-  </view>
+      <u-gap bg-color="transparent"></u-gap>
+      <view class="question"
+        ><u-icon name="error-circle" class="u-margin-right-15"></u-icon
+        >{{ profile.about.tip }}</view
+      >
+    </view>
+    <view slot="foot">
+      <!-- #ifdef MP-QQ  -->
+      <u-button open-type="openGroupProfile" group-id="1157749615"
+        >点击添加QQ群</u-button
+      >
+      <!-- #endif  -->
+      <!-- #ifdef MP-WEIXIN  -->
+      <u-button open-type="contact" type="success">点击联系作者</u-button>
+      <!-- #endif  -->
+    </view>
+  </u-card>
 </template>
 
 <script>
+import api from "@/utils/api";
 export default {
   data() {
     return {
-      bgStyle: {
-        background: "#f5f6fa",
-      },
+      profile: uni.getStorageSync("PROFILE"),
     };
+  },
+  methods: {
+    // 获取公告类信息
+    getJumpheroProfile() {
+      this.request({
+        url: api.JumpheroProfile,
+      })
+        .then((res) => {
+          this.profile = res.data;
+          uni.setStorageSync("PROFILE", res.data);
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
+  },
+  onShow() {
+    if (!this.profile) {
+      this.getJumpheroProfile();
+    }
   },
 };
 </script>

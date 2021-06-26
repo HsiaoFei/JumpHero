@@ -1,24 +1,24 @@
 
-export default (params)=>{
+export default (params) => {
 
-		if (params.method == "POST") {
-			params.header = {"content-type":"application/x-www-form-urlencoded"}
-        }
+    if (params.method == "POST") {
+        params.header = { "content-type": "application/x-www-form-urlencoded" }
+    }
 
     uni.showLoading({
-        title:"加载中"
+        title: "Loading"
     })
 
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject) => {
         uni.request({
             ...params,
-            success(res){
+            success(res) {
                 resolve(res)
             },
-            fail(err){
+            fail(err) {
                 reject(err)
             },
-            complete(){
+            complete() {
                 uni.hideLoading()
             }
         })
