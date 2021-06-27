@@ -1,17 +1,9 @@
 # JumpHero
 
-### 利用 [uni-app](https://uniapp.dcloud.io/) [uView](https://uviewui.com/)
+###  [uni-app](https://uniapp.dcloud.io/) [uView](https://uviewui.com/)
 
 
 300英雄战绩微信小程序
-
-
-npm install
-
-npm run dev:mp-weixin
-
-
-
 
 
 
