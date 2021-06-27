@@ -140,9 +140,9 @@
         </view>
       </view>
     </u-card>
-    <u-loadmore v-if="lists" :status="status" />
+    <u-loadmore v-if="!isEmpty" :status="status" />
     <!-- 空内容 -->
-    <u-empty margin-top="300" v-if="!lists"></u-empty>
+    <u-empty margin-top="300" v-if="isEmpty"></u-empty>
     <u-back-top :scroll-top="scrollTop"></u-back-top>
     <u-no-network @retry="reTry"></u-no-network>
     <u-toast ref="toast" />
@@ -167,6 +167,7 @@ export default {
       status: "loading", //在家状态
       imageUrl: api.ImageUrl,
       friends: {}, //好友集合
+      isEmpty: false,
     };
   },
   methods: {
@@ -191,7 +192,10 @@ export default {
           } else {
             this.lists = this.lists.concat(list);
           }
-        } else if (list.length < 10) this.status = "nomore";
+        }
+        if (list.length < 10) this.status = "nomore";
+        if (!this.lists.length) this.isEmpty = true;
+        // console.log(!this.lists.);
       });
     },
     //获取比赛数据
@@ -249,6 +253,7 @@ export default {
     this.myid = myid;
     this.name = option.RoleName;
     this.isShowEquip = settings.isShowEquip;
+    this.isShowMatchListTips = settings.isShowMatchListTips;
     this.getList(option.RoleName);
     uni.setNavigationBarTitle({
       title: option.RoleName,

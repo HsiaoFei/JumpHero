@@ -3,7 +3,14 @@
     <u-card
       :show-title="false"
       :show-head="false"
-      :body-style="{ background: '#f5f6fa' }"
+      :body-style="{
+        background:
+          result == 'win'
+            ? '#dbf1e1'
+            : result == 'lose'
+            ? '#fef0f0'
+            : '#f5f6fa',
+      }"
       v-for="(matchItem, matchIndex) in match"
       :key="matchIndex"
     >
@@ -168,8 +175,8 @@ export default {
   },
   watch: {
     myid(myid) {
-      if(uni.getStorageSync("FRIENDS" + myid))
-      this.friends = uni.getStorageSync("FRIENDS" + myid);
+      if (uni.getStorageSync("FRIENDS" + myid))
+        this.friends = uni.getStorageSync("FRIENDS" + myid);
     },
   },
   methods: {
@@ -196,7 +203,7 @@ export default {
             });
           else {
             this.friends[roleId] = true;
-            uni.setStorageSync("FRIENDS"+this.myid, this.friends);
+            uni.setStorageSync("FRIENDS" + this.myid, this.friends);
             this.$refs.toast.show({
               title: `${this.sheet.tips.text} 添加成功`,
               type: "success",

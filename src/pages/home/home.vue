@@ -4,10 +4,12 @@
     <u-notice-bar :list="notice"></u-notice-bar>
     <!-- 基本信息 -->
     <u-card
-      :title="names[current].name"
+      v-if="names.length"
+      :title="names[current].name ? names[current].name : ' '"
       sub-title="查询战绩"
       title-color="#2c3e50"
       sub-title-color="#2ecc71"
+      :show-foot="isCardFootShow"
       :head-style="{ background: '#f5f6fa' }"
       :body-style="{ background: '#f5f6fa' }"
       :foot-style="{ background: '#f5f6fa' }"
@@ -75,7 +77,7 @@
         <u-empty :show="!normal" mode="data"></u-empty>
       </view>
       <view slot="foot" style="color: #e67e22; font-size: 26rpx"
-        >切换召唤师</view
+        >切换召唤师({{ current + 1 }}/{{ names.length }})</view
       >
     </u-card>
     <u-card
@@ -94,7 +96,7 @@
       @head-click="switchType"
     >
       <view slot="body" class="content">
-        <u-grid :col="3" :border="false" :hover-class="none" v-if="normal">
+        <u-grid :col="3" :border="false" :hover-class="none">
           <u-grid-item bg-color="transparent">
             <view>{{
               normal.MatchSportsList[matchSportsListIndex].MatchSports.BestKill
@@ -217,7 +219,6 @@
             <view class="info">胜率</view>
           </u-grid-item>
         </u-grid>
-        <u-empty :show="!normal" mode="data"></u-empty>
       </view>
     </u-card>
     <!-- 空内容 -->
@@ -247,6 +248,7 @@ export default {
       guid: "", //区服列表
       names: [],
       normal: "",
+      isCardFootShow: true,
       matchSportsListIndex: 0,
       imageUrl: api.ImageUrl,
       isEmpty: false,
@@ -273,6 +275,7 @@ export default {
         data: { RoleName: name },
         method: "POST",
       }).then((res) => {
+        console.log(res.data.data);
         if (res.data.data) {
           this.normal = res.data.data;
           uni.setStorageSync("MYROLEID", res.data.data.RoleID);
@@ -335,11 +338,9 @@ export default {
     },
     //用户切换
     switchName() {
-      if (this.names) {
-        if (this.current < this.names.length - 1) this.current++;
-        else this.current = 0;
-        this.searchNormal(this.names[this.current].name);
-      }
+      if (this.current < this.names.length - 1) this.current++;
+      else this.current = 0;
+      this.searchNormal(this.names[this.current].name);
     },
     //重新获取
     reTry() {
@@ -362,10 +363,14 @@ export default {
     this.names = names;
     if (names.length) {
       this.searchNormal(names[this.current].name);
+      if (names.length == 1) this.isCardFootShow = false;
+      else this.isCardFootShow = true;
+      // this.$forceUpdate();
     } else {
       this.model.content = "未检测到本地有数据，是否前往召唤师管理界面？";
       this.model.show = true;
       this.isEmpty = true;
+      this.normal = "";
     }
   },
 };

@@ -49,24 +49,14 @@
       ></u-alert-tips>
     </view>
     <view>
-      <info-list
-        :match="match.WinSide"
-        :result="'win'"
-        :myid="myid"
-      ></info-list>
-      <info-list
-        :match="match.LoseSide"
-        :result="'lose'"
-        :myid="myid"
-      ></info-list>
+      <info-list :match="match.WinSide" result="win" :myid="myid"></info-list>
+      <info-list :match="match.LoseSide" result="lose" :myid="myid"></info-list>
     </view>
     <!-- 空内容 -->
-    <u-empty
-      margin-top="300"
-      v-if="!match.WinSide && !match.LoseSide"
-    ></u-empty>
+    <u-empty margin-top="300" v-if="isEmpty"></u-empty>
     <!-- 返回顶部 -->
     <u-back-top :scroll-top="scrollTop"></u-back-top>
+    <u-toast ref="toast" />
   </view>
 </template>
 
@@ -75,7 +65,6 @@ import api from "@/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/zh";
-// import infoCharts from "@/components/infoCharts/infoCharts";
 import infoList from "@/components/infoList/infoList";
 
 export default {
@@ -91,9 +80,9 @@ export default {
       myid: "",
       isShowFindFriendsTips: false,
       isFindFriends: false,
+      isEmpty: false,
     };
   },
-  computed: {},
   methods: {
     //格式化时间
     format(date) {
@@ -111,8 +100,11 @@ export default {
         data: { id: id },
         method: "POST",
       }).then((res) => {
-        this.match = res.data.Match;
-        console.log(res.data.Match);
+        let match = res.data.Match;
+        this.match = match;
+        // console.log(res.data.Match);
+        if (!match.WinSide.length && !match.LoseSide.length)
+          this.isEmpty = true;
       });
     },
     closeAlertTips() {

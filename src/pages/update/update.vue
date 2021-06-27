@@ -14,13 +14,9 @@
         ><text>{{ item.content }}</text></view
       >
     </u-card>
-    <u-modal
-      title="提示"
-      :title-style="{ 'font-weight': 700 }"
-      v-model="modal"
-      content="暂无内容"
-      @confirm="toBack(1)"
-    ></u-modal>
+    <u-empty margin-top="300" v-if="!profile.update">
+      <!-- <view slot="bottom" @click="reTry">重新获取</view> -->
+    </u-empty>
   </view>
 </template>
 
@@ -30,7 +26,6 @@ export default {
   data() {
     return {
       profile: uni.getStorageSync("PROFILE"),
-      modal: false,
     };
   },
   methods: {
@@ -50,9 +45,6 @@ export default {
     // reTry() {
     //   this.getJumpheroProfile();
     // },
-    toBack(value) {
-      uni.navigateBack(value);
-    },
   },
   onShow() {
     if (!this.profile) {
