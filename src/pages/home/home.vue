@@ -34,15 +34,15 @@
             <view class="info">区服</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.MasterLv">
-            <view>{{ normal.MasterLv ? normal.MasterLv : "-" }}</view>
+            <view>{{ normal.MasterLv }}</view>
             <view class="info">账号等级</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent" v-if="normal.LvVIP">
-            <view>{{ normal.LvVIP ? normal.LvVIP : "-" }}</view>
+          <u-grid-item bg-color="transparent" v-if="normal.LvVIP != null">
+            <view>{{ normal.LvVIP }}</view>
             <view class="info">VIP等级</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.TeamScore">
-            <view>{{ normal.TeamScore ? normal.TeamScore : "-" }}</view>
+            <view>{{ normal.TeamScore }}</view>
             <view class="info">团分</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.HeroCount">
@@ -50,22 +50,22 @@
             <view class="info">持有英雄</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.SkinCount">
-            <view>{{ normal.SkinCount ? normal.SkinCount : "-" }}</view>
+            <view>{{ normal.SkinCount }}</view>
             <view class="info">持有皮肤</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.RoleLevel">
-            <view>{{ normal.RoleLevel ? normal.RoleLevel : "-" }}</view>
+            <view>{{ normal.RoleLevel }}</view>
             <view class="info">等级</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.WinCount">
-            <view>{{ normal.WinCount ? normal.WinCount : "-" }}</view>
+            <view>{{ normal.WinCount }}</view>
             <view class="info">胜场</view>
           </u-grid-item>
           <u-grid-item bg-color="transparent" v-if="normal.MatchCount">
-            <view>{{ normal.MatchCount ? normal.MatchCount : "-" }}</view>
+            <view>{{ normal.MatchCount }}</view>
             <view class="info">总场</view>
           </u-grid-item>
-          <u-grid-item bg-color="transparent" v-if="normal.WinCount">
+          <u-grid-item bg-color="transparent" v-if="normal.MatchCount">
             <view>{{
               normal.MatchCount == 0
                 ? 0
@@ -264,9 +264,18 @@ export default {
     getGuid() {
       this.request({
         url: api.GuidUrl,
-      }).then((res) => {
-        this.guid = res.data;
-      });
+      })
+        .then((res) => {
+          this.guid = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
+        });
     },
     //获取英雄数据
     searchNormal(name) {
@@ -274,35 +283,53 @@ export default {
         url: api.NormalUrl,
         data: { RoleName: name },
         method: "POST",
-      }).then((res) => {
-        console.log(res.data.data);
-        if (res.data.data) {
-          this.normal = res.data.data;
-          uni.setStorageSync("MYROLEID", res.data.data.RoleID);
-        } else {
-          this.normal = "";
-          this.getRole(name);
-        }
-      });
+      })
+        .then((res) => {
+          console.log(res.data.data);
+          if (res.data.data) {
+            this.normal = res.data.data;
+            uni.setStorageSync("MYROLEID", res.data.data.RoleID);
+          } else {
+            this.normal = "";
+            this.getRole(name);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
+        });
     },
     getRole(name) {
       this.request({
         url: api.RoleUrl,
         data: { name },
         method: "POST",
-      }).then((res) => {
-        console.log("RoleUrl", res);
-        if (res.data.Role) {
-          this.normal = res.data.Role;
-          uni.setStorageSync("MYROLEID", res.data.Role.RoleID);
-        } else {
-          this.normal = "";
-          this.$refs.toast.show({
-            title: "啊哦~查询不到数据",
-            type: "error",
-          });
-        }
-      });
+      })
+        .then((res) => {
+          console.log("RoleUrl", res);
+          if (res.data.Role) {
+            this.normal = res.data.Role;
+            uni.setStorageSync("MYROLEID", res.data.Role.RoleID);
+          } else {
+            this.normal = "";
+            this.$refs.toast.show({
+              title: "啊哦~查询不到数据",
+              type: "error",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
+        });
     },
     // 获取公告类信息
     getJumpheroProfile() {
@@ -313,8 +340,13 @@ export default {
           this.notice.push(res.data.notice);
           uni.setStorageSync("PROFILE", res.data);
         })
-        .catch((res) => {
-          console.log(res);
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
         });
     },
     //跳转

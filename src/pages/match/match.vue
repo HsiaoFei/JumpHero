@@ -183,20 +183,29 @@ export default {
         url: api.ListUrl,
         data: { name, index },
         method: "POST",
-      }).then((res) => {
-        console.log("ListUrl", res);
-        let list = res.data.List;
-        if (list) {
-          if (this.isShowEquip) {
-            this.getMatch(list);
-          } else {
-            this.lists = this.lists.concat(list);
+      })
+        .then((res) => {
+          console.log("ListUrl", res);
+          let list = res.data.List;
+          if (list) {
+            if (this.isShowEquip) {
+              this.getMatch(list);
+            } else {
+              this.lists = this.lists.concat(list);
+            }
           }
-        }
-        if (list.length < 10) this.status = "nomore";
-        if (!this.lists.length) this.isEmpty = true;
-        // console.log(!this.lists.);
-      });
+          if (list.length < 10) this.status = "nomore";
+          if (!this.lists.length) this.isEmpty = true;
+          // console.log(!this.lists.);
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
+        });
     },
     //获取比赛数据
     getMatch(list) {
@@ -205,18 +214,27 @@ export default {
           url: api.MatchUrl,
           data: { id: list[i].MatchID },
           method: "POST",
-        }).then((res) => {
-          let matchs = res.data.Match.WinSide.concat(res.data.Match.LoseSide);
-          for (let j in matchs) {
-            if (matchs[j].RoleID == this.myid) {
-              list[i].Match = matchs[j];
-              return;
+        })
+          .then((res) => {
+            let matchs = res.data.Match.WinSide.concat(res.data.Match.LoseSide);
+            for (let j in matchs) {
+              if (matchs[j].RoleID == this.myid) {
+                list[i].Match = matchs[j];
+                return;
+              }
+              if (this.friends[matchs[j].RoleID]) {
+                list[i].haveFriends = true;
+              }
             }
-            if (this.friends[matchs[j].RoleID]) {
-              list[i].haveFriends = true;
-            }
-          }
-        });
+          })
+          .catch((err) => {
+            console.log(err);
+            if (err.errMsg == "request:fail timeout")
+              this.$refs.toast.show({
+                title: "请求超时",
+                type: "warning",
+              });
+          });
       }
       console.log(list);
       this.lists = this.lists.concat(list);

@@ -1,13 +1,16 @@
-
 export default (params) => {
+    uni.showLoading({
+        title: "Loading",
+        mask: true
+    })
 
     if (params.method == "POST") {
-        params.header = { "content-type": "application/x-www-form-urlencoded" }
+        params.header = {
+            "content-type": "application/x-www-form-urlencoded"
+        }
     }
 
-    uni.showLoading({
-        title: "Loading"
-    })
+    params.timeout = 6000
 
     return new Promise((resolve, reject) => {
         uni.request({

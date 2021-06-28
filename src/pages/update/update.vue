@@ -38,8 +38,13 @@ export default {
           this.profile = res.data;
           uni.setStorageSync("PROFILE", res.data);
         })
-        .catch((res) => {
-          console.log(res);
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
         });
     },
     // reTry() {

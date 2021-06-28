@@ -99,13 +99,22 @@ export default {
         url: api.MatchUrl,
         data: { id: id },
         method: "POST",
-      }).then((res) => {
-        let match = res.data.Match;
-        this.match = match;
-        // console.log(res.data.Match);
-        if (!match.WinSide.length && !match.LoseSide.length)
-          this.isEmpty = true;
-      });
+      })
+        .then((res) => {
+          let match = res.data.Match;
+          this.match = match;
+          // console.log(res.data.Match);
+          if (!match.WinSide.length && !match.LoseSide.length)
+            this.isEmpty = true;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.errMsg == "request:fail timeout")
+            this.$refs.toast.show({
+              title: "请求超时",
+              type: "warning",
+            });
+        });
     },
     closeAlertTips() {
       let settings = uni.getStorageSync("SETTINGS");
