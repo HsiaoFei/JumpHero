@@ -411,7 +411,7 @@ export default {
 <style lang="scss" scoped>
 .content {
   font-size: 30rpx;
-  color: $u-type-primary;
+  color: $u-type-primary-dark;
   .info {
     font-size: 22rpx;
     color: $u-light-color;

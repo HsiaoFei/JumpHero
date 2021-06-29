@@ -140,7 +140,7 @@
         </view>
       </view>
     </u-card>
-    <u-loadmore v-if="!isEmpty" :status="status" />
+    <u-loadmore v-if="!isEmpty" :status="status" @loadmore="reTry" />
     <!-- 空内容 -->
     <u-empty margin-top="300" v-if="isEmpty"></u-empty>
     <u-back-top :scroll-top="scrollTop"></u-back-top>
@@ -178,7 +178,7 @@ export default {
     },
     //获取比赛列表
     getList(name, index) {
-      if (index) index = 0;
+      // if (index) index = 0;
       this.request({
         url: api.ListUrl,
         data: { name, index },
@@ -187,24 +187,25 @@ export default {
         .then((res) => {
           console.log("ListUrl", res);
           let list = res.data.List;
-          if (list) {
+          if (list.length != 10) this.status = "nomore";
+          else {
+            this.index += 10;
             if (this.isShowEquip) {
               this.getMatch(list);
             } else {
               this.lists = this.lists.concat(list);
             }
           }
-          if (list.length < 10) this.status = "nomore";
           if (!this.lists.length) this.isEmpty = true;
           // console.log(!this.lists.);
         })
         .catch((err) => {
           console.log(err);
-          if (err.errMsg == "request:fail timeout")
-            this.$refs.toast.show({
-              title: "请求超时",
-              type: "warning",
-            });
+          if (err.errMsg == "request:fail timeout") this.status = "loadmore";
+          this.$refs.toast.show({
+            title: "请求超时",
+            type: "warning",
+          });
         });
     },
     //获取比赛数据
@@ -220,12 +221,13 @@ export default {
             for (let j in matchs) {
               if (matchs[j].RoleID == this.myid) {
                 list[i].Match = matchs[j];
-                return;
               }
               if (this.friends[matchs[j].RoleID]) {
                 list[i].haveFriends = true;
+                return;
               }
             }
+            console.log("matchs", matchs);
           })
           .catch((err) => {
             console.log(err);
@@ -260,7 +262,7 @@ export default {
       });
     },
     reTry() {
-      this.getList(this.name);
+      if (this.status != "nomore") this.getList(this.name, this.index);
     },
   },
   onLoad(option) {
@@ -281,8 +283,7 @@ export default {
     this.scrollTop = e.scrollTop;
   },
   onReachBottom() {
-    this.index += 10;
-    this.getList(this.name, this.index);
+    if (this.status != "nomore") this.getList(this.name, this.index);
   },
 };
 </script>

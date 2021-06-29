@@ -11,6 +11,7 @@ export default {
         isManagerOnline: false, //在线验证
         isFindFriends: false, //标记好友
         isShowFindFriendsTips: true, //标记好友提示
+        timeout: 6, //超时时间
       };
       uni.setStorageSync("SETTINGS", settings);
     }

@@ -160,7 +160,7 @@ export default {
     return {
       imageUrl: api.ImageUrl,
       isFindFriends: false, //标记好友
-      roleId: "", //好友识别码
+      roleid: "", //好友识别码
       friends: {}, //好友集合
       sheet: {
         //菜单
@@ -185,24 +185,26 @@ export default {
         url: "/pages/match/match?RoleName=" + roleName,
       });
     },
+    //打开菜单
     openActionSheet(name, id) {
+      let myid = this.myid;
       if (this.isFindFriends) {
-        this.roleId = id;
+        if (myid != id) this.roleid = id;
         this.sheet.tips.text = name;
         this.sheet.show = true;
       }
     },
     actionSheet(index) {
-      let roleId = this.roleId;
+      let roleid = this.roleid;
       switch (index) {
         case 0:
-          if (this.friends[roleId])
+          if (this.friends[roleid])
             this.$refs.toast.show({
               title: `${this.sheet.tips.text} 已经是好友啦`,
               type: "warning",
             });
           else {
-            this.friends[roleId] = true;
+            this.friends[roleid] = true;
             uni.setStorageSync("FRIENDS" + this.myid, this.friends);
             this.$refs.toast.show({
               title: `${this.sheet.tips.text} 添加成功`,
@@ -211,8 +213,8 @@ export default {
           }
           break;
         case 1:
-          if (this.friends[roleId]) {
-            delete this.friends[roleId];
+          if (this.friends[roleid]) {
+            delete this.friends[roleid];
             uni.setStorageSync("FRIENDS" + this.myid, this.friends);
             this.$refs.toast.show({
               title: `${this.sheet.tips.text} 删除成功`,
@@ -223,14 +225,11 @@ export default {
               title: `${this.sheet.tips.text} 还不是你好友哦`,
               type: "warning",
             });
-
           break;
       }
     },
   },
   mounted() {
-    // this.myid = uni.getStorageSync("MYROLEID");
-    // console.log(this.myid);
     let settings = uni.getStorageSync("SETTINGS");
     this.isFindFriends = settings.isFindFriends;
   },

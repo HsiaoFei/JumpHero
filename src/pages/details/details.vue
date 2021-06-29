@@ -116,6 +116,7 @@ export default {
             });
         });
     },
+    //关闭提示
     closeAlertTips() {
       let settings = uni.getStorageSync("SETTINGS");
       this.isShowFindFriendsTips = false;

@@ -33,7 +33,7 @@
           @change="change"
         ></u-switch
       ></u-cell-item>
-       <u-cell-item title="对战列表提示" :arrow="false" hover-class="none"
+      <u-cell-item title="对战列表提示" :arrow="false" hover-class="none"
         ><u-switch
           v-model="settings.isShowMatchListTips"
           :vibrate-short="true"
@@ -44,9 +44,22 @@
     </u-cell-group>
     <u-cell-group title="测试功能">
       <u-cell-item
+        title="网络请求超时"
+        label="默认6秒 详情前往 关于 查看"
+        :required="true"
+        :arrow="false"
+        hover-class="none"
+      >
+        <u-number-box
+          v-model="settings.timeout"
+          min="3"
+          max="20"
+          @change="change"
+        ></u-number-box>
+      </u-cell-item>
+      <u-cell-item
         title="标记好友"
         :required="true"
-        label="测试功能 所有数据均保存在本地"
         :arrow="false"
         hover-class="none"
         ><u-switch
@@ -81,11 +94,7 @@ export default {
     };
   },
   methods: {
-    toPage(path) {
-      uni.navigateTo({
-        url: path,
-      });
-    },
+    //改变选项
     change() {
       uni.setStorageSync("SETTINGS", this.settings);
     },
@@ -97,6 +106,7 @@ export default {
         isManagerOnline: false,
         isShowManagerTips: true,
         isFindFriends: false,
+        timeout: 6,
       };
       uni.setStorageSync("SETTINGS", settings);
     }
@@ -104,5 +114,5 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 </style>
