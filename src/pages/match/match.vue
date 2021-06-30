@@ -227,7 +227,6 @@ export default {
                 return;
               }
             }
-            console.log("matchs", matchs);
           })
           .catch((err) => {
             console.log(err);

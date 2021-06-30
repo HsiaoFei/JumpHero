@@ -1,7 +1,7 @@
 <template>
   <view>
+    <official-account></official-account>
     <u-card
-      v-if="profile.about"
       title="使用说明"
       title-color="#34495e"
       :head-style="{ background: '#f5f6fa' }"
@@ -10,11 +10,11 @@
     >
       <view slot="body">
         <view v-for="(item, index) in profile.about.content" :key="index">
-          <view class="question">
+          <view class="question" v-if="item.question">
             <u-icon name="question-circle" class="u-margin-right-15"></u-icon
             >{{ item.question }}</view
           >
-          <view class="answer"
+          <view class="answer" v-if="item.answer"
             ><u-icon name="checkmark-circle" class="u-margin-right-15"></u-icon
             >{{ item.answer }}</view
           >
@@ -24,19 +24,27 @@
           ><u-icon name="error-circle" class="u-margin-right-15"></u-icon
           >{{ profile.about.tip }}</view
         >
+        <u-empty v-if="!profile.about"></u-empty>
       </view>
       <view slot="foot">
         <!-- #ifdef MP-QQ  -->
-        <u-button open-type="openGroupProfile" group-id="1157749615"
-          >点击添加QQ群</u-button
+        <u-button
+          open-type="openGroupProfile"
+          group-id="1157749615"
+          size="medium"
+          >打开QQ群</u-button
         >
         <!-- #endif  -->
         <!-- #ifdef MP-WEIXIN  -->
-        <u-button open-type="contact" type="success">点击联系作者</u-button>
+        <u-button class="u-padding-right-20" open-type="contact" size="medium"
+          >联系作者</u-button
+        >
+        <u-button class="u-padding-right-20" open-type="feedback" size="medium"
+          >意见反馈</u-button
+        >
         <!-- #endif  -->
       </view>
     </u-card>
-    <u-empty margin-top="300" v-if="!profile.about"></u-empty>
   </view>
 </template>
 

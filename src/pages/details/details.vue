@@ -42,7 +42,7 @@
         v-if="isFindFriends"
         type="warning"
         :show="isShowFindFriendsTips"
-        description="现在你可以在本界面点击召唤师昵称标记好友啦！此功能为测试功能，可能存在Bug，敬请谅解。"
+        description="现在你可以在本界面点击召唤师昵称标记好友啦！此功能为测试功能，敬请谅解。"
         :show-icon="true"
         :close-able="true"
         @close="closeAlertTips"
