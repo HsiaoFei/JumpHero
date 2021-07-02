@@ -97,7 +97,7 @@ export default {
           if (idx == 0) {
             this.$refs.toast.show({
               title: "已经在顶上啦",
-              type: "success",
+              type: "warning",
             });
           } else {
             this.nameList.unshift(this.nameList[idx]);

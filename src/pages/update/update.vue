@@ -52,10 +52,17 @@ export default {
     // },
   },
   onShow() {
-    if (!this.profile) {
-      this.getJumpheroProfile();
-    }
+    if (!this.profile) this.getJumpheroProfile();
   },
+  onShareAppMessage() {
+    let title = `300英雄战绩 更新日志`;
+    let path = `/pages/update/update`;
+    return {
+      title,
+      path,
+    };
+  },
+  onShareTimeline() {},
 };
 </script>
 

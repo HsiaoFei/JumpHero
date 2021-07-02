@@ -382,6 +382,9 @@ export default {
     },
   },
   onLoad() {
+    let names = uni.getStorageSync("NAMES") || [];
+    this.names = names;
+
     this.getGuid();
     this.getJumpheroProfile();
     // #ifdef MP-QQ
@@ -391,13 +394,11 @@ export default {
     // #endif
   },
   onShow() {
-    let names = uni.getStorageSync("NAMES") || [];
-    this.names = names;
+    let names = this.names;
     if (names.length) {
       this.searchNormal(names[this.current].name);
       if (names.length == 1) this.isCardFootShow = false;
       else this.isCardFootShow = true;
-      // this.$forceUpdate();
     } else {
       this.model.content = "未检测到本地有数据，是否前往召唤师管理界面？";
       this.model.show = true;
@@ -405,6 +406,15 @@ export default {
       this.normal = "";
     }
   },
+  onShareAppMessage() {
+    let title = `300英雄战绩`;
+    let path = `/pages/home/home`;
+    return {
+      title,
+      path,
+    };
+  },
+  onShareTimeline() {},
 };
 </script>
 
