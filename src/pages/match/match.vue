@@ -219,13 +219,8 @@ export default {
           .then((res) => {
             let matchs = res.data.Match.WinSide.concat(res.data.Match.LoseSide);
             for (let j in matchs) {
-              if (matchs[j].RoleID == this.myid) {
-                list[i].Match = matchs[j];
-              }
-              if (this.friends[matchs[j].RoleID]) {
-                list[i].haveFriends = true;
-                return;
-              }
+              if (matchs[j].RoleID == this.myid) list[i].Match = matchs[j];
+              if (this.friends[matchs[j].RoleID]) list[i].haveFriends = true;
             }
           })
           .catch((err) => {

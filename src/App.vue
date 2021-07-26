@@ -9,7 +9,7 @@ export default {
         isShowManagerTips: true, //显示召唤师管理提示
         isShowMatchListTips: true, //对局列表显示提示
         isManagerOnline: false, //在线验证
-        isFindFriends: false, //标记好友
+        isFindFriends: true, //标记好友
         isShowFindFriendsTips: true, //标记好友提示
         timeout: 6, //超时时间
       };

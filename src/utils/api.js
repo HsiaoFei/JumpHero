@@ -1,6 +1,6 @@
 const ApiRootUrl = 'https://m300wxapp.jumpw.com/';
 const RootUrl = 'https://300report.jumpw.com/';
-const ApiUrl = '';
+const ApiUrl = 'https://hsiaofei.top/';
 
 module.exports = {
   GuidUrl: ApiRootUrl + 'config/getGuid', //区服

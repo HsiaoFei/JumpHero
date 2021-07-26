@@ -188,11 +188,12 @@ export default {
     //打开菜单
     openActionSheet(name, id) {
       let myid = this.myid;
-      if (this.isFindFriends) {
-        if (myid != id) this.roleid = id;
-        this.sheet.tips.text = name;
-        this.sheet.show = true;
-      }
+      if (this.isFindFriends)
+        if (myid != id) {
+          this.roleid = id;
+          this.sheet.tips.text = name;
+          this.sheet.show = true;
+        }
     },
     actionSheet(index) {
       let roleid = this.roleid;

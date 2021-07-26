@@ -26,20 +26,17 @@
         >
         <u-empty v-if="!profile.about"></u-empty>
       </view>
-      <view slot="foot">
+      <view slot="foot" class="u-flex">
         <!-- #ifdef MP-QQ  -->
-        <u-button
-          open-type="openGroupProfile"
-          group-id="1157749615"
-          size="medium"
+        <u-button open-type="openGroupProfile" group-id="1157749615"
           >打开QQ群</u-button
         >
         <!-- #endif  -->
         <!-- #ifdef MP-WEIXIN  -->
-        <u-button class="u-padding-right-20" open-type="contact" size="medium"
+        <u-button class="u-padding-right-20 u-flex-1" open-type="contact"
           >联系作者</u-button
         >
-        <u-button class="u-padding-right-20" open-type="feedback" size="medium"
+        <u-button class="u-padding-left-20 u-flex-1" open-type="feedback"
           >意见反馈</u-button
         >
         <!-- #endif  -->
