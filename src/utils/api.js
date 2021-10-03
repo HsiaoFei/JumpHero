@@ -10,7 +10,7 @@ module.exports = {
   MatchUrl: RootUrl + 'api/getmatch', //对局详情
   ImageUrl: RootUrl + 'static/images/', //图片
 
-  JumpheroProfile: ApiUrl + 'jumphero/profile.json', //公告日志类
+  JumpheroProfile: ApiUrl + '', //公告日志类
 
   // MatchsUrl: ApiRootUrl + 'battle/searchMatchs', //比赛列表
   // MatchinfoUrl: ApiRootUrl + 'battle/searchMatchinfo', //对局详情

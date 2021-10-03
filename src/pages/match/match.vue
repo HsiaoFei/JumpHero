@@ -279,6 +279,15 @@ export default {
   onReachBottom() {
     if (this.status != "nomore") this.getList(this.name, this.index);
   },
+  onShareAppMessage() {
+    let title = `300英雄战绩 ${this.name} 比赛列表`;
+    let path = `/pages/match/match?RoleName=${this.name}`;
+    return {
+      title,
+      path,
+    };
+  },
+  onShareTimeline() {},
 };
 </script>
 

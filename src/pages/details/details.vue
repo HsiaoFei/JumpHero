@@ -143,6 +143,15 @@ export default {
   onPageScroll(e) {
     this.scrollTop = e.scrollTop;
   },
+  onShareAppMessage() {
+    let title = "300英雄战绩 对局信息";
+    let path = `/pages/details/details?MatchID=${this.matchID}`;
+    return {
+      title,
+      path,
+    };
+  },
+  onShareTimeline() {},
 };
 </script>
 

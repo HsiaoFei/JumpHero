@@ -74,10 +74,17 @@ export default {
     },
   },
   onShow() {
-    if (!this.profile) {
-      this.getJumpheroProfile();
-    }
+    if (!this.profile) this.getJumpheroProfile();
   },
+  onShareAppMessage() {
+    let title = `300英雄战绩 关于`;
+    let path = `/pages/about/about`;
+    return {
+      title,
+      path,
+    };
+  },
+  onShareTimeline() {},
 };
 </script>
 
