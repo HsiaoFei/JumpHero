@@ -1,4 +1,4 @@
-# JumpHero
+# JumpHero[已下架]
 
 ###  [uni-app](https://uniapp.dcloud.io/) [uView](https://uviewui.com/)
 
